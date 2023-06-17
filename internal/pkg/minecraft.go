@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/mcstatus-io/mcutil"
@@ -11,28 +12,38 @@ var (
 	errFailedToConnect = errors.New("Failed to connect the server")
 )
 
-type server struct {
-	Ip      string
-	Port    uint16
-	Version string
-	Motd    string
+type Server struct {
+	Ip         string
+	Port       uint16
+	Version    string
+	Motd       string
+	Players    string
+	PlayerList []string
 }
 
-func Status(ip string, port uint16, timeout time.Duration) (server, error) {
+func Status(ip string, port uint16, timeout time.Duration) (Server, error) {
 
-	res := make(chan server, 1)
+	res := make(chan Server, 1)
 	go func() {
 		response, err := mcutil.Status(ip, port)
 
 		if err != nil {
-			res <- server{}
+			res <- Server{}
+			return
 		}
 
-		s := server{
-			Ip:      ip,
-			Port:    port,
-			Version: response.Version.NameRaw,
-			Motd:    response.MOTD.Clean,
+		var _playerList []string
+		for _, p := range response.Players.Sample {
+			_playerList = append(_playerList, p.NameClean)
+		}
+
+		s := Server{
+			Ip:         ip,
+			Port:       port,
+			Version:    response.Version.NameRaw,
+			Motd:       response.MOTD.Clean,
+			Players:    fmt.Sprintf("%d/%d", *response.Players.Online, *response.Players.Max),
+			PlayerList: _playerList,
 		}
 
 		res <- s
@@ -42,6 +53,6 @@ func Status(ip string, port uint16, timeout time.Duration) (server, error) {
 	case result := <-res:
 		return result, nil
 	case <-time.After(timeout * time.Millisecond):
-		return server{}, errFailedToConnect
+		return Server{}, errFailedToConnect
 	}
 }
