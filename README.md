@@ -14,4 +14,27 @@ ips:
   - 157.7.0.0
   - 118.27.0.0
   - 118.240.0.0
+...
+```
+
+# Result (as txt file)
+```txt
+0: 160.251.xxx.xxx
+	Version: 1.20
+	Players: 0/20
+	Player name: []
+	MOTD: A Minecraft Server
+
+1: 160.251.xxx.xxx
+	Version: 1.17.1
+	Players: 0/20
+	Player name: []
+	MOTD: A Minecraft Server
+
+2: 160.251.xxx.xxx
+	Version: 1.19.4
+	Players: 0/20
+	Player name: []
+	MOTD: A Minecraft Server
+...
 ```
