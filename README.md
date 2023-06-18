@@ -7,7 +7,7 @@ maxGoroutines is the maximum goroutine instance value.
 
 # checklist.yaml
 IPs can be set that is going to check. </br>
-Those ips are used for checking which is chaged after the second dot. </br>
+Those ips are used for checking where is changed after the second dot. </br>
 ```json
 ips:
   - 160.251.0.0
