@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -11,7 +12,18 @@ import (
 	"MineMonitor/internal/utils"
 )
 
+// Make default directory
+func constructer() string {
+	fileName := fmt.Sprintf("%d", time.Now().Unix())
+	if err := os.Mkdir(fileName, 0755); err != nil {
+		panic(err)
+	}
+	return fileName
+}
+
 func main() {
+	saveDirectory := constructer()
+
 	ip_list := utils.Config().Ips
 
 	for _, iL := range ip_list {
@@ -74,7 +86,7 @@ func main() {
 			openServers = append(openServers, r)
 		}
 
-		utils.WriteResult(openServers)
+		utils.WriteResult(openServers, saveDirectory)
 
 	}
 }

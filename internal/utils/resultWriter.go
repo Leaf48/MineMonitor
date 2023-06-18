@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-func WriteResult(servers []pkg.Server) {
+func WriteResult(servers []pkg.Server, saveDirectory string) {
 	local := time.Now()
-	fileName := fmt.Sprintf("%d-%d-%d-%d-%d-%d.txt", local.Year(), int(local.Month()), local.Day(), local.Hour(), local.Minute(), local.Second())
+	fileName := fmt.Sprintf("%s/%d-%d-%d-%d-%d-%d.txt", saveDirectory, local.Year(), int(local.Month()), local.Day(), local.Hour(), local.Minute(), local.Second())
 
 	// Create file
 	file, err := os.Create(fileName)
