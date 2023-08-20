@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"MineMonitor/internal/pkg"
+	"MineMonitor/internal/pkg/types"
 	"fmt"
 	"os"
 	"time"
 )
 
-func WriteResult(servers []pkg.Server, saveDirectory string) {
+func WriteResult(servers []types.Server, saveDirectory string) {
 	local := time.Now()
 	fileName := fmt.Sprintf("%s/%d-%d-%d-%d-%d-%d.txt", saveDirectory, local.Year(), int(local.Month()), local.Day(), local.Hour(), local.Minute(), local.Second())
 

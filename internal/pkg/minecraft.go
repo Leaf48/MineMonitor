@@ -4,31 +4,24 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
 	"github.com/mcstatus-io/mcutil"
+  "MineMonitor/internal/pkg/types"
 )
 
 var (
 	errFailedToConnect = errors.New("Failed to connect the server")
 )
 
-type Server struct {
-	Ip         string
-	Port       uint16
-	Version    string
-	Motd       string
-	Players    string
-	PlayerList []string
-}
+func Status(ip string, port uint16, timeout time.Duration) (types.Server, error) {
 
-func Status(ip string, port uint16, timeout time.Duration) (Server, error) {
+	res := make(chan types.Server, 1)
 
-	res := make(chan Server, 1)
 	go func() {
 		response, err := mcutil.Status(ip, port)
 
+    // Return empty when unavailable
 		if err != nil {
-			res <- Server{}
+			res <- types.Server{}
 			return
 		}
 
@@ -37,7 +30,7 @@ func Status(ip string, port uint16, timeout time.Duration) (Server, error) {
 			_playerList = append(_playerList, p.NameClean)
 		}
 
-		s := Server{
+		s := types.Server{
 			Ip:         ip,
 			Port:       port,
 			Version:    response.Version.NameRaw,
@@ -53,6 +46,6 @@ func Status(ip string, port uint16, timeout time.Duration) (Server, error) {
 	case result := <-res:
 		return result, nil
 	case <-time.After(timeout * time.Millisecond):
-		return Server{}, errFailedToConnect
+		return types.Server{}, errFailedToConnect
 	}
 }
