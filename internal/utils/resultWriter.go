@@ -4,12 +4,13 @@ import (
 	"MineMonitor/internal/pkg/types"
 	"fmt"
 	"os"
-	"time"
+	// "time"
 )
 
-func WriteResult(servers []types.Server, saveDirectory string) {
-	local := time.Now()
-	fileName := fmt.Sprintf("%s/%d-%d-%d-%d-%d-%d.txt", saveDirectory, local.Year(), int(local.Month()), local.Day(), local.Hour(), local.Minute(), local.Second())
+func WriteResult(servers []types.Server, saveDirectory string, ip string) {
+	// local := time.Now()
+	// fileName := fmt.Sprintf("%s/%d-%d-%d-%d-%d-%d.txt", saveDirectory, local.Year(), int(local.Month()), local.Day(), local.Hour(), local.Minute(), local.Second())
+	fileName := fmt.Sprintf("%s/%s.txt", saveDirectory, ip)
 
 	// Create file
 	file, err := os.Create(fileName)

@@ -2,13 +2,13 @@ package pkg
 import (
 	"fmt"
 	"log"
-	"strings"
 	"sync"
 	"time"
 
 	"MineMonitor/internal/pkg/types"
 	"MineMonitor/internal/utils"
 )
+
 
 func RunCrawler(saveDirectory string, ip_list []string){
 	for _, iL := range ip_list {
@@ -24,25 +24,39 @@ func RunCrawler(saveDirectory string, ip_list []string){
 		resultsChan := make(chan types.Server, len(generatedIP))
 
 		// limit / channel
-		maxGoroutines := 2000
+		maxGoroutines := 1000
 		limitChan := make(chan struct{}, maxGoroutines)
 
-    // Channel for goroutine counter
+    // Channel for internet outage
+    outageChan := make(chan struct{}, maxGoroutines)
+
+    // Channel for when Goroutine stops
     stopChan := make(chan struct{})
-    
-    // Goroutine counter
-		go func() {
-			for {
+
+    // Counter
+    go func() {
+      for {
         select{
         case <- stopChan:
+          log.Println("Goroutine task finished!")
           return
         default:
-          log.Printf("Current Goroutines: %v", len(limitChan))
-          time.Sleep(1 * time.Second)
-        }
-			}
-		}()
+          if !utils.IsConnected{
+            log.Println("Outage has been detected. Reconnecting...")
+            log.Printf("Current Outage: %v", len(outageChan))
+            time.Sleep(3 * time.Second)
 
+            if utils.IsConnected{
+              log.Println("Outage has been solved. Starting...")
+            }
+          }else{
+            fmt.Printf("Current: %v\n", len(limitChan) - len(outageChan))
+            time.Sleep(2 * time.Second)
+          }
+        }
+      }
+    }()
+    
 		// WaitGroup
 		var wg sync.WaitGroup
 
@@ -54,25 +68,35 @@ func RunCrawler(saveDirectory string, ip_list []string){
       // It waits if there's no empty slot
 			limitChan <- struct{}{}
 
+      // Goroutine for checking server
 			go func(ip string) {
-				// fmt.Println(ip)
-				splitIp := strings.Split(ip, ".")[3]
+				// splitIp := strings.Split(ip, ".")[3]
 
+        // In case of outage
+        if !utils.IsConnected{
+          outageChan <- struct{}{}
+
+          for !utils.IsConnected{
+            time.Sleep(1 * time.Second)
+          }
+          <- outageChan
+        }else{
+          // Check ip
+          // return: pkg.Server
+          r, err := Status(ip, 25565, 4000)
+          if err == nil && r.Version != "" {
+            resultsChan <- r
+          }
+        }
+
+        // Done Goroutine
 				defer func() {
 					<-limitChan
 					wg.Done()
-					if splitIp == "0" {
-						fmt.Println(ip)
-					}
+					// if splitIp == "0" {
+					// 	fmt.Println(ip)
+					// }
 				}()
-
-        // Check ip
-        // return: pkg.Server
-				r, err := Status(ip, 25565, 2000)
-				if err == nil && r.Version != "" {
-					resultsChan <- r
-				}
-
 			}(v)
 		}
 
@@ -88,7 +112,7 @@ func RunCrawler(saveDirectory string, ip_list []string){
 		}
 
     // Write result as .txt file in a directory
-		utils.WriteResult(openServers, saveDirectory)
+		utils.WriteResult(openServers, saveDirectory, iL)
 	}
 }
 

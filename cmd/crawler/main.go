@@ -21,9 +21,11 @@ func constructer() string {
 func main() {
   // create directory to save .txt file
 	saveDirectory := constructer()
-
+	
   // get target ip
-	ip_list := utils.Config().Ips
+  ip_list := utils.Config().Ips
+	
+  go utils.CheckInternetConnection()
 
   pkg.RunCrawler(saveDirectory, ip_list)
 }
