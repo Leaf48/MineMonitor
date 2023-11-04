@@ -1,13 +1,13 @@
 # MineMonitor
-It is the fastest Minecraft Server Checker, which 2000 server checks at the same time using Goroutine.
+It is the fastest Minecraft Server Checker checking 2000 servers at the same time.
 ![image](https://github.com/Leaf48/MineMonitor/assets/58620209/92168c96-6135-4029-973c-9bef56565d86)
 
 # Configuration
 maxGoroutines is the maximum goroutine instance value.
 
 # checklist.yaml
-IPs can be set that is going to check. </br>
-Those ips are used for checking where is changed after the second dot. </br>
+You can configure what IPs are subject to check. </br>
+In those Ips, the numbers following second dot are subject to change. </br>
 ```json
 ips:
   - 160.251.0.0
