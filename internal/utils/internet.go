@@ -9,7 +9,8 @@ var IsConnected bool
 
 func CheckInternetConnection(){
   for {
-    conn, err := net.DialTimeout("tcp", "8.8.8.8:80", 2500 * time.Millisecond)
+    // conn, err := net.DialTimeout("tcp", "8.8.8.8:80", 2500 * time.Millisecond)
+    conn, err := net.DialTimeout("tcp", "google.com:80", 2500 * time.Millisecond)
 
     if err != nil{
       IsConnected = false
